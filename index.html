@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mohammed Yaseen | Video Editor & Portfolio</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        dark: '#050505',
+                        darker: '#0a0a0a',
+                        accent: '#6366f1',
+                        accent2: '#a855f7',
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #050505;
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6366f1; }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .noise-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* ── Hero Video ── */
+        .hero-video-wrap {
+            position: relative;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 0 60px rgba(99,102,241,0.18);
+            background: #0a0a0a;
+            aspect-ratio: 9/16;
+            max-height: 480px;
+        }
+        @media (min-width: 768px) {
+            .hero-video-wrap { aspect-ratio: 16/9; max-height: 340px; }
+        }
+        .hero-video-wrap video {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .hero-video-overlay {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.3s;
+            background: rgba(0,0,0,0.3);
+        }
+        .hero-video-wrap:hover .hero-video-overlay { opacity: 1; }
+
+        /* ── Work Section ── */
+        #work { scroll-margin-top: 80px; }
+
+        .category-title {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: clamp(1.4rem, 4vw, 2.2rem);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .category-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* ── Video Card ── */
+        .video-card {
+            position: relative;
+            border-radius: 1rem;
+            overflow: hidden;
+            background: #111;
+            border: 1px solid rgba(255,255,255,0.08);
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.16,1,0.3,1),
+                        box-shadow 0.3s ease,
+                        border-color 0.3s ease;
+            will-change: transform;
+        }
+        .video-card:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 20px 60px rgba(99,102,241,0.22);
+            border-color: rgba(99,102,241,0.4);
+        }
+        .video-card video {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: 1rem;
+        }
+        /* Maintain aspect ratio via aspect-ratio CSS */
+        .video-card-inner {
+            aspect-ratio: 9/16;
+            position: relative;
+        }
+        .video-card-inner.landscape {
+            aspect-ratio: 16/9;
+        }
+
+        /* Play/Pause Overlay */
+        .card-overlay {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.25);
+            transition: background 0.3s, opacity 0.3s;
+            border-radius: 1rem;
+        }
+        .card-overlay .play-icon {
+            width: 52px; height: 52px;
+            background: rgba(99,102,241,0.85);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.25s, opacity 0.3s;
+            opacity: 0;
+        }
+        .video-card:hover .card-overlay .play-icon,
+        .video-card.paused .card-overlay .play-icon { opacity: 1; }
+        .card-overlay .play-icon i { font-size: 1.5rem; color: #fff; }
+
+        /* When playing and not hovered — minimal overlay */
+        .video-card.playing .card-overlay {
+            background: rgba(0,0,0,0);
+        }
+
+        /* Video number badge */
+        .vid-badge {
+            position: absolute;
+            top: 10px; left: 10px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(6px);
+            color: rgba(255,255,255,0.7);
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            padding: 3px 8px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.1);
+            pointer-events: none;
+        }
+
+        /* Volume badge */
+        .vid-mute-btn {
+            position: absolute;
+            bottom: 10px; right: 10px;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            color: rgba(255,255,255,0.8);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            z-index: 5;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .video-card:hover .vid-mute-btn { opacity: 1; }
+
+        /* ── Grid Layouts ── */
+        .grid-portrait {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(2, 1fr);
+        }
+        @media (min-width: 640px) {
+            .grid-portrait { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (min-width: 1024px) {
+            .grid-portrait { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        .grid-landscape {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: 1fr;
+        }
+        @media (min-width: 640px) {
+            .grid-landscape { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (min-width: 1024px) {
+            .grid-landscape { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        /* Category color accents */
+        .cat-exclusive { color: #818cf8; }
+        .cat-collab { color: #c084fc; }
+        .cat-feelgood { color: #34d399; }
+        .cat-short { color: #f472b6; }
+        .cat-bts { color: #fb923c; }
+    </style>
+</head>
+<body class="antialiased selection:bg-accent selection:text-white flex flex-col min-h-screen">
+
+    <div class="noise-bg"></div>
+
+    <nav class="fixed w-full z-40 bg-dark/80 backdrop-blur-md border-b border-white/5 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="#" class="font-heading font-bold text-2xl tracking-tighter text-white">
+                        YASEEN<span class="text-accent">.</span>
+                    </a>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#about" class="text-sm font-medium text-gray-300 hover:text-white transition-colors">About</a>
+                    <a href="#skills" class="text-sm font-medium text-gray-300 hover:text-white transition-colors">Skills</a>
+                    <a href="#work" class="text-sm font-medium text-gray-300 hover:text-white transition-colors">Work</a>
+                    <a href="#experience" class="text-sm font-medium text-gray-300 hover:text-white transition-colors">Experience</a>
+                    <a href="#contact" class="px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-all duration-300 border border-white/10">Let's Talk</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-gray-300 hover:text-white p-2 focus:outline-none touch-manipulation">
+                        <i class="ph ph-list text-3xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Panel -->
+        <div id="mobile-menu" class="hidden md:hidden bg-darker border-b border-white/5 absolute w-full left-0 top-20 shadow-2xl">
+            <div class="px-4 pt-2 pb-6 space-y-2">
+                <a href="#about" class="block px-3 py-3 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/5 mobile-link">About</a>
+                <a href="#skills" class="block px-3 py-3 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/5 mobile-link">Skills</a>
+                <a href="#work" class="block px-3 py-3 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/5 mobile-link">Work</a>
+                <a href="#experience" class="block px-3 py-3 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/5 mobile-link">Experience</a>
+                <a href="#contact" class="block px-3 py-3 mt-4 rounded-md text-base font-medium bg-accent text-white text-center mobile-link">Let's Talk</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow pt-20">
+
+        <!-- ══════════ HERO ══════════ -->
+        <section id="hero" class="relative min-h-[90vh] flex items-center justify-center overflow-hidden py-16">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] max-w-[600px] max-h-[600px] bg-accent/20 rounded-full blur-[100px] pointer-events-none"></div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+                <div class="text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-12">
+
+                    <!-- Text side -->
+                    <div class="w-full md:w-1/2 flex flex-col justify-center animate-fade-in-up">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 w-max mx-auto md:mx-0 mb-6">
+                            <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                            <span class="text-xs font-medium text-gray-300 tracking-wide uppercase">Available for Freelance</span>
+                        </div>
+
+                        <h1 class="font-heading font-800 text-5xl sm:text-6xl lg:text-7xl xl:text-8xl leading-tight mb-4 text-white">
+                            Crafting <br />
+                            <span class="text-gradient">Visual Stories.</span>
+                        </h1>
+
+                        <p class="mt-4 text-lg sm:text-xl text-gray-400 max-w-xl mx-auto md:mx-0 font-light">
+                            I'm <strong class="text-white font-medium">Mohammed Yaseen</strong>, a passionate Video Editor &amp; Social Media Manager helping brands connect through dynamic editing, color, and sound.
+                        </p>
+
+                        <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                            <a href="#work" class="px-8 py-4 rounded-full bg-white text-dark font-medium hover:bg-gray-200 transition-colors flex items-center justify-center gap-2 touch-manipulation">
+                                View My Work <i class="ph ph-arrow-right"></i>
+                            </a>
+                            <a href="#contact" class="px-8 py-4 rounded-full bg-transparent border border-white/20 text-white font-medium hover:bg-white/5 transition-colors flex items-center justify-center touch-manipulation">
+                                Contact Me
+                            </a>
+                        </div>
+
+                        <div class="mt-12 flex items-center justify-center md:justify-start gap-6 text-gray-400">
+                            <div class="flex items-center gap-2">
+                                <i class="ph ph-map-pin text-xl text-accent"></i>
+                                <span class="text-sm">Dubai &amp; Kerala</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="ph ph-video-camera text-xl text-accent2"></i>
+                                <span class="text-sm">100+ Videos Edited</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hero Video -->
+                    <div class="w-full md:w-1/2 animate-fade-in-up" style="animation-delay:0.2s;">
+                        <div class="hero-video-wrap" id="hero-video-wrap">
+                            <video
+                                id="hero-vid"
+                                src="assets/portfolio/exclusive/1.mp4"
+                                autoplay
+                                muted
+                                loop
+                                playsinline
+                                preload="auto"
+                                poster=""
+                                aria-label="Featured video reel"
+                            ></video>
+                            <div class="hero-video-overlay" id="hero-overlay">
+                                <button id="hero-toggle" class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center hover:bg-white/30 transition-colors touch-manipulation" aria-label="Toggle play">
+                                    <i class="ph ph-pause text-white text-2xl" id="hero-toggle-icon"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-center text-xs text-gray-600 mt-2 tracking-widest uppercase">Featured Reel</p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════ ABOUT ══════════ -->
+        <section id="about" class="py-24 bg-darker relative border-t border-white/5">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                    <div class="reveal">
+                        <h2 class="font-heading text-sm text-accent tracking-[0.2em] uppercase font-bold mb-3">About Me</h2>
+                        <h3 class="font-heading text-3xl sm:text-4xl font-bold mb-6">Turning Raw Footage into <span class="text-gradient">Masterpieces</span>.</h3>
+                        <div class="space-y-4 text-gray-400 leading-relaxed text-lg font-light">
+                            <p>I am a dedicated Freelance Video Editor with experience creating engaging videos for social media, promotional content, and digital platforms since June 2020.</p>
+                            <p>With strong skills in video editing, color correction, audio synchronization, and visual storytelling, I focus on delivering high-quality content that meets client requirements while staying ahead of industry trends.</p>
+                            <p>Whether it's crafting punchy short-form content for Instagram Reels and TikTok, or producing polished promotional campaigns, my goal is to capture attention and tell compelling stories.</p>
+                        </div>
+                        <div class="mt-8 p-5 rounded-2xl bg-white/5 border border-white/10 flex items-start gap-4">
+                            <div class="p-3 rounded-xl bg-accent/20 text-accent">
+                                <i class="ph ph-graduation-cap text-2xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-medium text-lg">Bachelor of Computer Application</h4>
+                                <p class="text-sm text-gray-400">MES KVM College, Calicut University (2021 - 2024)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 reveal" style="transition-delay: 0.2s;">
+                        <div class="space-y-4">
+                            <div class="bg-white/5 border border-white/10 p-6 rounded-3xl text-center">
+                                <h4 class="text-4xl font-heading font-bold text-white mb-2">100+</h4>
+                                <p class="text-sm text-gray-400 uppercase tracking-wider">Videos Edited</p>
+                            </div>
+                            <div class="bg-white/5 border border-white/10 p-6 rounded-3xl text-center aspect-square flex flex-col justify-center">
+                                <i class="ph ph-instagram-logo text-4xl text-pink-500 mb-3 mx-auto"></i>
+                                <p class="text-sm text-gray-400">Social Media Expert</p>
+                            </div>
+                        </div>
+                        <div class="space-y-4 mt-8">
+                            <div class="bg-white/5 border border-white/10 p-6 rounded-3xl text-center aspect-square flex flex-col justify-center">
+                                <i class="ph ph-film-strip text-4xl text-accent mb-3 mx-auto"></i>
+                                <p class="text-sm text-gray-400">Visual Storytelling</p>
+                            </div>
+                            <div class="bg-gradient-to-br from-accent/20 to-accent2/20 border border-accent/30 p-6 rounded-3xl text-center">
+                                <h4 class="text-4xl font-heading font-bold text-white mb-2">3+</h4>
+                                <p class="text-sm text-gray-400 uppercase tracking-wider">Years Exp.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════ SKILLS ══════════ -->
+        <section id="skills" class="py-24 relative border-t border-white/5">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-2xl mx-auto mb-16 reveal">
+                    <h2 class="font-heading text-sm text-accent tracking-[0.2em] uppercase font-bold mb-3">Expertise</h2>
+                    <h3 class="font-heading text-3xl sm:text-4xl font-bold">Tools &amp; Techniques</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white/5 border border-white/10 p-8 rounded-3xl reveal">
+                        <div class="w-12 h-12 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center mb-6">
+                            <i class="ph ph-monitor-play text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-heading font-semibold text-white mb-6">Software</h4>
+                        <ul class="space-y-4">
+                            <li class="flex items-center gap-3"><div class="w-2 h-2 rounded-full bg-accent"></div><span class="text-gray-300">Adobe Premiere Pro</span></li>
+                            <li class="flex items-center gap-3"><div class="w-2 h-2 rounded-full bg-accent"></div><span class="text-gray-300">Adobe After Effects</span></li>
+                            <li class="flex items-center gap-3"><div class="w-2 h-2 rounded-full bg-accent"></div><span class="text-gray-300">CapCut &amp; VN Editor</span></li>
+                            <li class="flex items-center gap-3"><div class="w-2 h-2 rounded-full bg-accent"></div><span class="text-gray-300">Adobe Photoshop</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white/5 border border-white/10 p-8 rounded-3xl reveal" style="transition-delay: 0.1s;">
+                        <div class="w-12 h-12 rounded-xl bg-accent/20 text-accent flex items-center justify-center mb-6">
+                            <i class="ph ph-faders text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-heading font-semibold text-white mb-6">Editing Skills</h4>
+                        <ul class="space-y-4">
+                            <li class="flex items-center gap-3"><div class="w-2 h-2 rounded-full bg-accent2"></div><span class="text-gray-300">Color Correction</span></li>
+                            <li class="flex items-center gap-3"><div class="w-2 h-2 rounded-full bg-accent2"></div><span class="text-gray-300">Audio Synchronization</span></li>
+                            <li class="flex items-center gap-3"><div class="w-2 h-2 rounded-full bg-accent2"></div><span class="text-gray-300">Seamless Transitions</span></li>
+                            <li class="flex items-center gap-3"><div class="w-2 h-2 rounded-full bg-accent2"></div><span class="text-gray-300">Multi-platform Export</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white/5 border border-white/10 p-8 rounded-3xl reveal" style="transition-delay: 0.2s;">
+                        <div class="w-12 h-12 rounded-xl bg-green-500/20 text-green-400 flex items-center justify-center mb-6">
+                            <i class="ph ph-lightbulb text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-heading font-semibold text-white mb-6">Additional Skills</h4>
+                        <ul class="space-y-4">
+                            <li class="flex items-center gap-3"><div class="w-2 h-2 rounded-full bg-green-500"></div><span class="text-gray-300">Social Media Management</span></li>
+                            <li class="flex items-center gap-3"><div class="w-2 h-2 rounded-full bg-green-500"></div><span class="text-gray-300">AI Video (VEO) &amp; Canva</span></li>
+                            <li class="flex items-center gap-3"><div class="w-2 h-2 rounded-full bg-green-500"></div><span class="text-gray-300">Poster Making</span></li>
+                            <li class="flex items-center gap-3"><div class="w-2 h-2 rounded-full bg-green-500"></div><span class="text-gray-300">Flutter Development basics</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════ VIEW MY WORK ══════════ -->
+        <section id="work" class="py-24 bg-darker relative border-t border-white/5">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+                <div class="text-center max-w-2xl mx-auto mb-20 reveal">
+                    <h2 class="font-heading text-sm text-accent tracking-[0.2em] uppercase font-bold mb-3">Portfolio</h2>
+                    <h3 class="font-heading text-3xl sm:text-4xl font-bold">View My Work</h3>
+                    <p class="mt-4 text-gray-400 font-light">A collection of edits across brands, moods, and formats. Tap any video to pause or play.</p>
+                </div>
+
+                <!-- ── EXCLUSIVE ── -->
+                <div class="mb-20 reveal">
+                    <div class="category-title cat-exclusive">
+                        <i class="ph ph-star-four"></i> Exclusive
+                    </div>
+                    <div class="grid-portrait" id="grid-exclusive">
+                        <!-- portrait cards: 9:16 -->
+                        <div class="video-card" data-src="assets/portfolio/exclusive/1.mp4" data-orientation="portrait">
+                            <div class="video-card-inner">
+                                <video muted playsinline preload="none" loop></video>
+                                <div class="card-overlay">
+                                    <div class="play-icon"><i class="ph ph-play"></i></div>
+                                </div>
+                                <span class="vid-badge">01</span>
+                                <button class="vid-mute-btn" aria-label="Toggle mute"><i class="ph ph-speaker-slash"></i></button>
+                            </div>
+                        </div>
+                        <div class="video-card" data-src="assets/portfolio/exclusive/2.mp4" data-orientation="portrait">
+                            <div class="video-card-inner">
+                                <video muted playsinline preload="none" loop></video>
+                                <div class="card-overlay"><div class="play-icon"><i class="ph ph-play"></i></div></div>
+                                <span class="vid-badge">02</span>
+                                <button class="vid-mute-btn" aria-label="Toggle mute"><i class="ph ph-speaker-slash"></i></button>
+                            </div>
+                        </div>
+                        <div class="video-card" data-src="assets/portfolio/exclusive/3.mp4" data-orientation="portrait">
+                            <div class="video-card-inner">
+                                <video muted playsinline preload="none" loop></video>
+                                <div class="card-overlay"><div class="play-icon"><i class="ph ph-play"></i></div></div>
+                                <span class="vid-badge">03</span>
+                                <button class="vid-mute-btn" aria-label="Toggle mute"><i class="ph ph-speaker-slash"></i></button>
+                            </div>
+                        </div>
+                        <div class="video-card" data-src="assets/portfolio/exclusive/4.mp4" data-orientation="portrait">
+                            <div class="video-card-inner">
+                                <video muted playsinline preload="none" loop></video>
+                                <div class="card-overlay"><div class="play-icon"><i class="ph ph-play"></i></div></div>
+                                <span class="vid-badge">04</span>
+                                <button class="vid-mute-btn" aria-label="Toggle mute"><i class="ph ph-speaker-slash"></i></button>
+                            </div>
+                        </div>
+                        <div class="video-card" data-src="assets/portfolio/exclusive/5.mp4" data-orientation="portrait">
+                            <div class="video-card-inner">
+                                <video muted playsinline preload="none" loop></video>
+                                <div class="card-overlay"><div class="play-icon"><i class="ph ph-play"></i></div></div>
+                                <span class="vid-badge">05</span>
+                                <button class="vid-mute-btn" aria-label="Toggle mute"><i class="ph ph-speaker-slash"></i></button>
+                            </div>
+                        </div>
+                        <div class="video-card" data-src="assets/portfolio/exclusive/6.mp4" data-orientation="portrait">
+                            <div class="video-card-inner">
+                                <video muted playsinline preload="none" loop></video>
+                                <div class="card-overlay"><div class="play-icon"><i class="ph ph-play"></i></div></div>
+                                <span class="vid-badge">06</span>
+                                <button class="vid-mute-btn" aria-label="Toggle mute"><i class="ph ph-speaker-slash"></i></button>
+                            </div>
+                        </div>
+                        <div class="video-card" data-src="assets/portfolio/exclusive/7.mp4" data-orientation="portrait">
+                            <div class="video-card-inner">
+                                <video muted playsinline preload="none" loop></video>
+                                <div class="card-overlay"><div class="play-icon"><i class="ph ph-play"></i></div></div>
+                                <span class="vid-badge">07</span>
+                                <button class="vid-mute-btn" aria-label="Toggle mute"><i class="ph ph-speaker-slash"></i></button>
+                            </div>
+                        </div>
+                        <div class="video-card" data-src="assets/portfolio/exclusive/8.mp4" data-orientation="portrait">
+                            <div class="video-card-inner">
+                                <video muted playsinline preload="none" loop></video>
+                                <div class="card-overlay"><div class="play-icon"><i class="ph ph-play"></i></div></div>
+                                <span class="vid-badge">08</span>
+                                <button class="vid-mute-btn" aria-label="Toggle mute"><i class="ph ph-speaker-slash"></i></button>
+                            </div>
+                        </div>
+                        <div class="video-card" data-src="assets/portfolio/exclusive/9.mp4" data-orientation="portrait">
+                            <div class="video-card-inner">
+                                <video muted playsinline preload="none" loop></video>
+                                <div class="card-overlay"><div class="play-icon"><i class="ph ph-play"></i></div></div>
+                                <span class="vid-badge">09</span>
+                                <button class="vid-mute-btn" aria-label="Toggle mute"><i class="ph ph-speaker-slash"></i></button>
+                            </div>
+                        </div>
+                        <div class="video-card" data-src="assets/portfolio/exclusive/10.mp4" data-orientation="portrait">
+                            <div class="video-card-inner">
+                                <video muted playsinline preload="none" loop></video>
+                                <div class="card-overlay"><div class="play-icon"><i class="ph ph-play"></i></div></div>
+                                <span class="vid-badge">10</span>
+                                <button class="vid-mute-btn" aria-label="Toggle mute"><i class="ph ph-speaker-slash"></i></button>
+                            </div>
+                        </div>
+                        <div class="video-card" data-src="assets/portfolio/exclusive/11.mp4" data-orientation="portrait">
+                            <div class="video-card-inner">
+                                <video muted playsinline preload="none" loop></video>
+                                <div class="card-overlay"><div class="play-icon"><i class="ph ph-play"></i></div></div>
+                                <span class="vid-badge">11</span>
+                                <button class="vid-mute-btn" aria-label="Toggle mute"><i class="ph ph-speaker-slash"></i></button>
+                            </div>
+                        </div>
+                        <div class="video-card" data-src="assets/portfolio/exclusive/12.mp4" data-orientation="portrait">
+                            <div class="video-card-inner">
+                                <video muted playsinline preload="none" loop></video>
+                                <div class="card-overlay"><div class="play-icon"><i class="ph ph-play"></i></div></div>
+                                <span class="vid-badge">12</span>
+                                <button class="vid-mute-btn" aria-label="Toggle mute"><i class="ph ph-speaker-slash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── COLLAB ── -->
+                <div class="mb-20 reveal">
+                    <div class="category-title cat-collab">
+                        <i class="ph ph-handshake"></i> Collaborations
+                    </div>
+                    <div class="grid-landscape" id="grid-collab">
+                        <div class="video-card" data-src="assets/portfolio/collab/case.mp4" data-orientation="landscape">
+                            <div class="video-card-inner landscape">
+                                <video muted playsinline preload="none" loop></video>
+                                <div class="card-overlay"><div class="play-icon"><i class="ph ph-play"></i></div></div>
+                                <span class="vid-badge">CASE</span>
+                                <button class="vid-mute-btn" aria-label="Toggle mute"><i class="ph ph-speaker-slash"></i></button>
+                            </div>
+                        </div>
+                        <div class="video-card" data-src="assets/portfolio/collab/comet.mp4" data-orientation="landscape">
+                            <div class="video-card-inner landscape">
+                                <video muted playsinline preload="none" loop></video>
+                                <div class="card-overlay"><div class="play-icon"><i class="ph ph-play"></i></div></div>
+                                <span class="vid-badge">COMET</span>
+                                <button class="vid-mute-btn" aria-label="Toggle mute"><i class="ph ph-speaker-slash"></i></button>
+                            </div>
+                        </div>
+                        <div class="video-card" data-src="assets/portfolio/collab/jawa.mp4" data-orientation="landscape">
+                            <div class="video-card-inner landscape">
+                                <video muted playsinline preload="none" loop></video>
+                                <div class="card-overlay"><div class="play-icon"><i class="ph ph-play"></i></div></div>
+                                <span class="vid-badge">JAWA</span>
+                                <button class="vid-mute-btn" aria-label="Toggle mute"><i class="ph ph-speaker-slash"></i></button>
+                            </div>
+                        </div>
+                        <div class="video-card" data-src="assets/portfolio/collab/overtake.mp4" data-orientation="landscape">
+                            <div class="video-card-inner landscape">
+                                <video muted playsinline preload="none" loop></video>
+                                <div class="card-overlay"><div class="play-icon"><i class="ph ph-play"></i></div></div>
+                                <span class="vid-badge">OVERTAKE</span>
+                                <button class="vid-mute-btn" aria-label="Toggle mute"><i class="ph ph-speaker-slash"></i></button>
+                            </div>
+                        </div>
+                        <div class="video-card" data-src="assets/portfolio/collab/signlaban.mp4" data-orientation="landscape">
+                            <div class="video-card-inner landscape">
+                                <video muted playsinline preload="none" loop></video>
+                                <div class="card-overlay"><div class="play-icon"><i class="ph ph-play"></i></div></div>
+                                <span class="vid-badge">SIGNLABAN</span>
+                                <button class="vid-mute-btn" aria-label="Toggle mute"><i class="ph ph-speaker-slash"></i></button>
+                            </div>
+                        </div>
+                        <div class="video-card" data-src="assets/portfolio/collab/suzuki.mp4" data-orientation="landscape">
+                            <div class="video-card-inner landscape">
+                                <video muted playsinline preload="none" loop></video>
+                                <div class="card-overlay"><div class="play-icon"><i class="ph ph-play"></i></div></div>
+                                <span class="vid-badge">SUZUKI</span>
+                                <button class="vid-mute-btn" aria-label="Toggle mute"><i class="ph ph-speaker-slash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── FEEL GOOD ── -->
+                <div class="mb-20 reveal">
+                    <div class="category-title cat-feelgood">
+                        <i class="ph ph-sun"></i> Feel Good
+                    </div>
+                    <div class="grid-portrait" id="grid-feelgood">
+                        <div class="video-card" data-src="assets/portfolio/feelgood/1.mp4" data-orientation="portrait">
+                            <div class="video-card-inner">
+                                <video muted playsinline preload="none" loop></video>
+                                <div class="card-overlay"><div class="play-icon"><i class="ph ph-play"></i></div></div>
+                                <span class="vid-badge">01</span>
+                                <button class="vid-mute-btn" aria-label="Toggle mute"><i class="ph ph-speaker-slash"></i></button>
+                            </div>
+                        </div>
+                        <div class="video-card" data-src="assets/portfolio/feelgood/2.mp4" data-orientation="portrait">
+                            <div class="video-card-inner">
+                                <video muted playsinline preload="none" loop></video>
+                                <div class="card-overlay"><div class="play-icon"><i class="ph ph-play"></i></div></div>
+                                <span class="vid-badge">02</span>
+                                <button class="vid-mute-btn" aria-label="Toggle mute"><i class="ph ph-speaker-slash"></i></button>
+                            </div>
+                        </div>
+                        <div class="video-card" data-src="assets/portfolio/feelgood/3.mp4" data-orientation="portrait">
+                            <div class="video-card-inner">
+                                <video muted playsinline preload="none" loop></video>
+                                <div class="card-overlay"><div class="play-icon"><i class="ph ph-play"></i></div></div>
+                                <span class="vid-badge">03</span>
+                                <button class="vid-mute-btn" aria-label="Toggle mute"><i class="ph ph-speaker-slash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── SHORT ── -->
+                <div class="mb-20 reveal">
+                    <div class="category-title cat-short">
+                        <i class="ph ph-lightning"></i> Shorts
+                    </div>
+                    <div class="grid-portrait" id="grid-short">
+                        <div class="video-card" data-src="assets/portfolio/short/1.mp4" data-orientation="portrait">
+                            <div class="video-card-inner">
+                                <video muted playsinline preload="none" loop></video>
+                                <div class="card-overlay"><div class="play-icon"><i class="ph ph-play"></i></div></div>
+                                <span class="vid-badge">01</span>
+                                <button class="vid-mute-btn" aria-label="Toggle mute"><i class="ph ph-speaker-slash"></i></button>
+                            </div>
+                        </div>
+                        <div class="video-card" data-src="assets/portfolio/short/2.mp4" data-orientation="portrait">
+                            <div class="video-card-inner">
+                                <video muted playsinline preload="none" loop></video>
+                                <div class="card-overlay"><div class="play-icon"><i class="ph ph-play"></i></div></div>
+                                <span class="vid-badge">02</span>
+                                <button class="vid-mute-btn" aria-label="Toggle mute"><i class="ph ph-speaker-slash"></i></button>
+                            </div>
+                        </div>
+                        <div class="video-card" data-src="assets/portfolio/short/3.mp4" data-orientation="portrait">
+                            <div class="video-card-inner">
+                                <video muted playsinline preload="none" loop></video>
+                                <div class="card-overlay"><div class="play-icon"><i class="ph ph-play"></i></div></div>
+                                <span class="vid-badge">03</span>
+                                <button class="vid-mute-btn" aria-label="Toggle mute"><i class="ph ph-speaker-slash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── BTS ── -->
+                <div class="mb-4 reveal">
+                    <div class="category-title cat-bts">
+                        <i class="ph ph-camera"></i> Behind The Scenes
+                    </div>
+                    <div class="grid-landscape" id="grid-bts">
+                        <div class="video-card" data-src="assets/portfolio/bts/1.mp4" data-orientation="landscape">
+                            <div class="video-card-inner landscape">
+                                <video muted playsinline preload="none" loop></video>
+                                <div class="card-overlay"><div class="play-icon"><i class="ph ph-play"></i></div></div>
+                                <span class="vid-badge">BTS</span>
+                                <button class="vid-mute-btn" aria-label="Toggle mute"><i class="ph ph-speaker-slash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ══════════ EXPERIENCE ══════════ -->
+        <section id="experience" class="py-24 bg-dark relative border-t border-white/5 overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-16 reveal">
+                    <div class="max-w-2xl">
+                        <h2 class="font-heading text-sm text-accent tracking-[0.2em] uppercase font-bold mb-3">History</h2>
+                        <h3 class="font-heading text-3xl sm:text-4xl font-bold">Experience &amp; Collaborations</h3>
+                    </div>
+                </div>
+
+                <div class="relative reveal">
+                    <div class="absolute left-[15px] sm:left-[27px] top-4 bottom-4 w-[2px] bg-white/10"></div>
+
+                    <div class="space-y-12">
+                        <div class="relative pl-12 sm:pl-20">
+                            <div class="absolute left-0 sm:left-3 top-2 w-8 h-8 rounded-full bg-darker border-2 border-accent flex items-center justify-center z-10">
+                                <div class="w-3 h-3 rounded-full bg-accent"></div>
+                            </div>
+                            <div class="bg-white/5 border border-white/10 p-6 sm:p-8 rounded-3xl hover:bg-white/10 transition-colors duration-300">
+                                <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-4 gap-2">
+                                    <h4 class="text-xl sm:text-2xl font-heading font-bold text-white">Freelance Video Editor</h4>
+                                    <span class="text-accent text-sm font-medium px-3 py-1 rounded-full bg-accent/10 w-max">Jun 2020 – Present</span>
+                                </div>
+                                <p class="text-gray-400 mb-6 text-sm">Kochi, Kerala &amp; Dubai Remote</p>
+                                <ul class="space-y-3 text-gray-300 font-light">
+                                    <li class="flex items-start gap-2">
+                                        <i class="ph ph-check-circle text-accent mt-1 flex-shrink-0"></i>
+                                        <span>Produced and edited 100+ videos optimized for YouTube, Instagram Reels, TikTok, and Facebook.</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i class="ph ph-check-circle text-accent mt-1 flex-shrink-0"></i>
+                                        <span>Managed full post-production workflow including trimming, color correction, sound design, and final rendering.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="relative pl-12 sm:pl-20">
+                            <div class="absolute left-0 sm:left-3 top-2 w-8 h-8 rounded-full bg-darker border-2 border-accent2 flex items-center justify-center z-10">
+                                <div class="w-3 h-3 rounded-full bg-accent2"></div>
+                            </div>
+                            <div class="bg-white/5 border border-white/10 p-6 sm:p-8 rounded-3xl hover:bg-white/10 transition-colors duration-300">
+                                <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-4 gap-2">
+                                    <h4 class="text-xl sm:text-2xl font-heading font-bold text-white">Social Media Manager</h4>
+                                    <span class="text-accent2 text-sm font-medium px-3 py-1 rounded-full bg-accent2/10 w-max">MES KVM College</span>
+                                </div>
+                                <ul class="space-y-3 text-gray-300 font-light">
+                                    <li class="flex items-start gap-2">
+                                        <i class="ph ph-check-circle text-accent2 mt-1 flex-shrink-0"></i>
+                                        <span>Managed video content for the institution's official social media accounts.</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i class="ph ph-check-circle text-accent2 mt-1 flex-shrink-0"></i>
+                                        <span>Created engaging content aligned with branding guidelines to boost audience interaction.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-20 reveal">
+                    <h4 class="text-center text-sm font-medium text-gray-500 uppercase tracking-widest mb-8">Brands I've Collaborated With</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div class="bg-white/5 border border-white/10 h-24 rounded-2xl flex items-center justify-center">
+                            <span class="font-heading font-bold text-xl text-gray-300 tracking-wider">COMET</span>
+                        </div>
+                        <div class="bg-white/5 border border-white/10 h-24 rounded-2xl flex items-center justify-center">
+                            <span class="font-heading font-bold text-xl text-gray-300 tracking-wider">SIGNLABAN</span>
+                        </div>
+                        <div class="bg-white/5 border border-white/10 h-24 rounded-2xl flex items-center justify-center col-span-2 md:col-span-1">
+                            <span class="font-heading font-bold text-xl text-gray-300 tracking-wider">OVERTAKE</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════ CONTACT ══════════ -->
+        <section id="contact" class="py-24 relative border-t border-white/5 bg-gradient-to-b from-darker to-dark">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center reveal">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent/20 text-accent mb-8">
+                    <i class="ph ph-paper-plane-tilt text-3xl"></i>
+                </div>
+                <h2 class="font-heading text-4xl sm:text-5xl md:text-6xl font-bold mb-6">Let's create something <span class="text-gradient">amazing.</span></h2>
+                <p class="text-gray-400 text-lg max-w-2xl mx-auto mb-12">Open for freelance opportunities. Whether you need a quick social media edit or a full promotional campaign, feel free to reach out.</p>
+
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+                    <a href="mailto:messageyaseen@gmail.com" class="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-dark font-medium hover:bg-gray-200 transition-colors flex items-center justify-center gap-3 touch-manipulation text-lg">
+                        <i class="ph ph-envelope-simple text-xl"></i> messageyaseen@gmail.com
+                    </a>
+                    <a href="tel:+917356041058" class="w-full sm:w-auto px-8 py-4 rounded-full bg-white/10 text-white font-medium hover:bg-white/20 transition-colors border border-white/10 flex items-center justify-center gap-3 touch-manipulation text-lg">
+                        <i class="ph ph-phone text-xl"></i> +91 7356041058
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="border-t border-white/5 bg-darker py-12 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="font-heading font-bold text-xl tracking-tighter text-white">
+                YASEEN<span class="text-accent">.</span>
+            </div>
+            <p class="text-gray-500 text-sm">
+                &copy; <span id="year"></span> Mohammed Yaseen. All rights reserved.
+            </p>
+            <div class="flex space-x-4">
+                <a href="#" aria-label="LinkedIn" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-accent/50 transition-all touch-manipulation">
+                    <i class="ph ph-linkedin-logo text-xl"></i>
+                </a>
+                <a href="#" aria-label="Instagram" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-pink-500/50 transition-all touch-manipulation">
+                    <i class="ph ph-instagram-logo text-xl"></i>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    (function () {
+        'use strict';
+
+        /* ── Utility: year ── */
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        /* ── Mobile Menu ── */
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIcon = menuBtn.querySelector('i');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        const toggleMenu = () => {
+            const hidden = mobileMenu.classList.toggle('hidden');
+            menuIcon.className = hidden ? 'ph ph-list text-3xl' : 'ph ph-x text-3xl';
+        };
+
+        menuBtn.addEventListener('click', toggleMenu);
+        mobileLinks.forEach(l => l.addEventListener('click', () => {
+            if (!mobileMenu.classList.contains('hidden')) toggleMenu();
+        }));
+
+        /* ── Navbar scroll ── */
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            navbar.classList.toggle('shadow-lg', window.scrollY > 20);
+            navbar.classList.toggle('bg-dark/95', window.scrollY > 20);
+            navbar.classList.toggle('bg-dark/80', window.scrollY <= 20);
+        }, { passive: true });
+
+        /* ── Reveal animations ── */
+        const revealEls = document.querySelectorAll('.reveal');
+        if (!('IntersectionObserver' in window)) {
+            revealEls.forEach(el => el.classList.add('active'));
+        } else {
+            const revealObs = new IntersectionObserver((entries, obs) => {
+                entries.forEach(e => {
+                    if (e.isIntersecting) { e.target.classList.add('active'); obs.unobserve(e.target); }
+                });
+            }, { rootMargin: '0px 0px -10% 0px', threshold: 0.08 });
+            revealEls.forEach(el => revealObs.observe(el));
+        }
+
+        /* ── Hero Video toggle ── */
+        const heroVid = document.getElementById('hero-vid');
+        const heroToggle = document.getElementById('hero-toggle');
+        const heroIcon = document.getElementById('hero-toggle-icon');
+
+        heroToggle.addEventListener('click', () => {
+            if (heroVid.paused) {
+                heroVid.play();
+                heroIcon.className = 'ph ph-pause text-white text-2xl';
+            } else {
+                heroVid.pause();
+                heroIcon.className = 'ph ph-play text-white text-2xl';
+            }
+        });
+
+        /* ── Portfolio Video Cards ── */
+        // We use IntersectionObserver:
+        //   • When card enters viewport → load src + play
+        //   • When card leaves viewport → pause + unload (src = '')
+        // This keeps memory/CPU at a minimum on low-end devices.
+        // Only ONE video plays at a time per page (auto-managed).
+
+        const cards = document.querySelectorAll('.video-card');
+        // Track currently playing card to pause it when another starts
+        let activeCard = null;
+
+        // Preload threshold — load src when card is 200px away from viewport
+        const PRELOAD_MARGIN = '200px';
+
+        /* Set up each card */
+        cards.forEach(card => {
+            const src = card.dataset.src;
+            const inner = card.querySelector('.video-card-inner');
+            const vid = card.querySelector('video');
+            const overlay = card.querySelector('.card-overlay');
+            const playIcon = overlay.querySelector('.play-icon i');
+            const muteBtn = card.querySelector('.vid-mute-btn');
+            const muteBtnIcon = muteBtn.querySelector('i');
+
+            let loaded = false;
+            let muted = true;
+
+            /* Load src lazily when near viewport */
+            const preloadObs = new IntersectionObserver(entries => {
+                entries.forEach(e => {
+                    if (e.isIntersecting && !loaded) {
+                        vid.src = src;
+                        vid.load();
+                        loaded = true;
+                        preloadObs.unobserve(card);
+                    }
+                });
+            }, { rootMargin: PRELOAD_MARGIN });
+            preloadObs.observe(card);
+
+            /* Auto-play / pause based on visibility */
+            const playObs = new IntersectionObserver(entries => {
+                entries.forEach(e => {
+                    if (e.isIntersecting) {
+                        // Only auto-play if no card is currently actively playing
+                        // (user hasn't manually started another)
+                        if (!activeCard) {
+                            vid.play().catch(() => {});
+                            card.classList.add('playing');
+                            card.classList.remove('paused');
+                            playIcon.className = 'ph ph-pause';
+                        }
+                    } else {
+                        if (!vid.paused) {
+                            vid.pause();
+                            card.classList.remove('playing');
+                            card.classList.add('paused');
+                            playIcon.className = 'ph ph-play';
+                            if (activeCard === card) activeCard = null;
+                        }
+                    }
+                });
+            }, { threshold: 0.4 }); // at least 40% visible to autoplay
+            playObs.observe(card);
+
+            /* Click card to toggle play/pause */
+            // Exclude mute button click from triggering card toggle
+            inner.addEventListener('click', (e) => {
+                if (e.target.closest('.vid-mute-btn')) return;
+                if (!loaded) {
+                    vid.src = src;
+                    vid.load();
+                    loaded = true;
+                }
+                if (vid.paused) {
+                    // Pause any other active card
+                    if (activeCard && activeCard !== card) {
+                        const prevVid = activeCard.querySelector('video');
+                        const prevIcon = activeCard.querySelector('.card-overlay .play-icon i');
+                        prevVid.pause();
+                        activeCard.classList.remove('playing');
+                        activeCard.classList.add('paused');
+                        if (prevIcon) prevIcon.className = 'ph ph-play';
+                    }
+                    vid.play().catch(() => {});
+                    activeCard = card;
+                    card.classList.add('playing');
+                    card.classList.remove('paused');
+                    playIcon.className = 'ph ph-pause';
+                } else {
+                    vid.pause();
+                    activeCard = null;
+                    card.classList.remove('playing');
+                    card.classList.add('paused');
+                    playIcon.className = 'ph ph-play';
+                }
+            });
+
+            /* Mute toggle */
+            muteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                muted = !muted;
+                vid.muted = muted;
+                muteBtnIcon.className = muted ? 'ph ph-speaker-slash' : 'ph ph-speaker-high';
+            });
+
+            /* Update icon when video ends / loops */
+            vid.addEventListener('ended', () => {
+                // loop is set so this rarely fires, but just in case
+                playIcon.className = 'ph ph-play';
+                card.classList.remove('playing');
+                card.classList.add('paused');
+                if (activeCard === card) activeCard = null;
+            });
+        });
+
+        /* Pause all portfolio videos when tab is hidden (save CPU) */
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                cards.forEach(card => {
+                    const vid = card.querySelector('video');
+                    if (!vid.paused) { vid.pause(); }
+                });
+                // Also pause hero
+                heroVid.pause();
+                heroIcon.className = 'ph ph-play text-white text-2xl';
+            } else {
+                // Resume hero
+                heroVid.play().catch(() => {});
+                heroIcon.className = 'ph ph-pause text-white text-2xl';
+            }
+        });
+
+    })();
+    </script>
+</body>
+</html>
